@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理者ページ</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+  <h1>コインコントローラー</h1>
+  <div id="qr-reader" style="width:300px;"></div>
+  <p id="user-id"></p>
+  <p>現在のコイン: <span id="coin-count">--</span></p>
+  <div id="controls">
+    <button data-diff="1">+1</button>
+    <button data-diff="3">+3</button>
+    <button data-diff="-1">-1</button>
+    <button data-diff="-5">-5</button>
+    <button data-diff="0">±0</button>
+    <input type="number" id="multiplier" placeholder="×数字">
+    <button id="multiply">かける</button>
+  </div>
+  <a href="ranking.html">▶ ランキングを見る</a>
+
+  <script type="module">
+    import { initializeApp } from "firebase/app";
+    import { getDatabase, ref, set, onValue, get } from "firebase/database";
+    import { firebaseConfig } from "./firebase.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    let currentId = null;
+
+    function onScanSuccess(decodedText) {
+      currentId = decodedText;
+      document.getElementById("user-id").textContent = `ID: ${currentId}`;
+
+      const userRef = ref(db, `users/${currentId}`);
+      get(userRef).then(snapshot => {
+        if (!snapshot.exists()) {
+          set(userRef, { coin: 10, nickname: "", retired: false });
+        }
+      });
+
+      onValue(userRef, snap => {
+        const data = snap.val();
+        document.getElementById("coin-count").textContent = data.coin;
+      });
+    }
+
+    new Html5Qrcode("qr-reader").start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      onScanSuccess
+    );
+
+    document.querySelectorAll("button[data-diff]").forEach(btn => {
+      btn.onclick = () => {
+        if (!currentId) return;
+        const diff = parseInt(btn.dataset.diff);
+        const userRef = ref(db, `users/${currentId}/coin`);
+        get(userRef).then(snap => {
+          const coin = snap.val() ?? 0;
+          set(userRef, coin + diff);
+        });
+      };
+    });
+
+    document.getElementById("multiply").onclick = () => {
+      const factor = parseInt(document.getElementById("multiplier").value);
+      if (!currentId || isNaN(factor)) return;
+      const userRef = ref(db, `users/${currentId}/coin`);
+      get(userRef).then(snap => {
+        const coin = snap.val() ?? 0;
+        set(userRef, coin * factor);
+      });
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>退場ページ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+  <h1>退場処理</h1>
+  <div id="qr-reader" style="width:300px;"></div>
+  <p id="status">QRコードをスキャンしてください</p>
+  <a href="index.html">◀ 参加者ページへ戻る</a>
+
+  <script type="module">
+    import { initializeApp } from "firebase/app";
+    import { getDatabase, ref, update } from "firebase/database";
+    import { firebaseConfig } from "./firebase.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    function onScanSuccess(decodedText) {
+      const userId = decodedText;
+      const userRef = ref(db, `users/${userId}`);
+      update(userRef, { retired: true });
+      document.getElementById("status").textContent = `ID: ${userId} を退場扱いにしました`;
+    }
+
+    new Html5Qrcode("qr-reader").start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      onScanSuccess
+    );
+  </script>
+</body>
+</html>

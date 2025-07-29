@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ランキング初期化</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>管理者：ランキング初期化</h1>
+
+  <button id="reset-total">総合ランキング初期化（全データ削除）</button>
+  <br><br>
+  <button id="reset-session">セッションランキング初期化</button>
+  <p id="status"></p>
+  <a href="admin.html">◀ 管理者ページへ戻る</a>
+
+  <script type="module">
+    import { initializeApp } from "firebase/app";
+    import { getDatabase, ref, remove, get, child, set } from "firebase/database";
+    import { firebaseConfig } from "./firebase.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const status = document.getElementById("status");
+
+    document.getElementById("reset-total").onclick = async () => {
+      if (!confirm("本当に全ての参加者情報を削除しますか？")) return;
+
+      await remove(ref(db, "users"));
+      await remove(ref(db, "rankings/total"));
+      await remove(ref(db, "rankings/session"));
+      status.textContent = "総合ランキングと全ユーザーデータを削除しました";
+    };
+
+    document.getElementById("reset-session").onclick = async () => {
+      await remove(ref(db, "rankings/session"));
+
+      // セッションランキングに登録し直す（全ユーザーから取得）
+      const usersSnap = await get(ref(db, "users"));
+      if (usersSnap.exists()) {
+        const users = usersSnap.val();
+        for (const id in users) {
+          const user = users[id];
+          await set(ref(db, `rankings/session/${id}`), {
+            coin: user.coin,
+            nickname: user.nickname || "",
+            retired: !!user.retired
+          });
+        }
+      }
+
+      status.textContent = "セッションランキングを初期化しました";
+    };
+  </script>
+</body>
+</html>

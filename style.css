@@ -1,0 +1,50 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+button, input[type="text"], select {
+  font-size: 16px;
+  padding: 10px 15px;
+  margin: 5px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+button:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+input:focus, button:focus {
+  outline: none;
+  border-color: #007BFF;
+}
+
+a {
+  display: inline-block;
+  margin-top: 20px;
+  color: #007BFF;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#qr-reader {
+  margin: 0 auto;
+  max-width: 300px;
+  padding: 10px;
+  border: 2px dashed #aaa;
+  border-radius: 10px;
+}

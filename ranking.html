@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ランキング</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>ランキング</h1>
+
+  <div id="mode-switch">
+    <button id="session-btn">セッションランキング</button>
+    <button id="total-btn">総合ランキング</button>
+  </div>
+
+  <ul id="ranking-list"></ul>
+
+  <a href="index.html">◀ 参加者ページへ</a> |
+  <a href="admin.html">管理者ページへ ▶</a>
+
+  <script type="module">
+    import { initializeApp } from "firebase/app";
+    import { getDatabase, ref, onValue } from "firebase/database";
+    import { firebaseConfig } from "./firebase.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const rankingList = document.getElementById("ranking-list");
+    const sessionBtn = document.getElementById("session-btn");
+    const totalBtn = document.getElementById("total-btn");
+
+    let currentMode = "session"; // または "total"
+
+    function updateRanking() {
+      const rankingRef = ref(db, `rankings/${currentMode}`);
+      onValue(rankingRef, snapshot => {
+        const data = snapshot.val() || {};
+        const sorted = Object.entries(data)
+          .filter(([_, val]) => typeof val.coin === "number")
+          .sort((a, b) => b[1].coin - a[1].coin);
+
+        rankingList.innerHTML = "";
+        sorted.forEach(([id, val], idx) => {
+          const li = document.createElement("li");
+          const name = val.nickname || `(ID:${id})`;
+          const suffix = val.retired ? "（確定）" : "";
+          li.textContent = `${idx + 1}位: ${name} - ${val.coin} 枚 ${suffix}`;
+          rankingList.appendChild(li);
+        });
+      });
+    }
+
+    sessionBtn.onclick = () => {
+      currentMode = "session";
+      updateRanking();
+    };
+
+    totalBtn.onclick = () => {
+      currentMode = "total";
+      updateRanking();
+    };
+
+    updateRanking(); // 初期表示
+  </script>
+</body>
+</html>
