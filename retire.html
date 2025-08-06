@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>退場ページ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>退場ページ</h1>
+    <video id="qr-video" width="300" height="200" autoplay></video>
+    <p id="message">QRコードをかざしてください</p>
+  </div>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      update
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAweBQJ17LYvPsfYUCBLygwdehoTEOrsiQ",
+      authDomain: "project-7411251555753678403.firebaseapp.com",
+      databaseURL: "https://project-7411251555753678403-default-rtdb.firebaseio.com",
+      projectId: "project-7411251555753678403",
+      storageBucket: "project-7411251555753678403.appspot.com",
+      messagingSenderId: "172462885590",
+      appId: "1:172462885590:web:bf2ca6b6e7e668f1445777"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const message = document.getElementById("message");
+
+    const qrScanner = new Html5Qrcode("qr-video");
+    qrScanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      async (decodedText) => {
+        await qrScanner.stop();
+
+        const id = decodedText.trim();
+        const userRef = ref(db, `players/${id}`);
+
+        update(userRef, { retired: true }).then(() => {
+          message.textContent = `ID ${id} を退場としてマークしました。`;
+        }).catch(() => {
+          message.textContent = "退場処理中にエラーが発生しました。";
+        });
+      }
+    );
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ランキング</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>ランキング</h1>
+
+    <div>
+      <button onclick="switchRanking('session')">セッションランキング</button>
+      <button onclick="switchRanking('total')">総合ランキング</button>
+    </div>
+
+    <ul id="rankingList"></ul>
+
+    <a id="backButton" href="#">戻る</a>
+  </div>
+
+  <script type="module" src="js/ranking.js"></script>
+</body>
+</html>

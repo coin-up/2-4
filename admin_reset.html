@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>管理者リセットページ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>ランキング初期化</h1>
+
+    <button onclick="resetSessionRanking()">セッションランキング初期化</button>
+    <button onclick="resetTotalRanking()">総合ランキング初期化</button>
+
+    <p id="status"></p>
+    <button onclick="goToRanking()">ランキングを見る</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getDatabase, ref, set, remove } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAweBQJ17LYvPsfYUCBLygwdehoTEOrsiQ",
+      authDomain: "project-7411251555753678403.firebaseapp.com",
+      databaseURL: "https://project-7411251555753678403-default-rtdb.firebaseio.com",
+      projectId: "project-7411251555753678403",
+      storageBucket: "project-7411251555753678403.appspot.com",
+      messagingSenderId: "172462885590",
+      appId: "1:172462885590:web:bf2ca6b6e7e668f1445777"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const status = document.getElementById("status");
+
+    window.resetSessionRanking = () => {
+      remove(ref(db, 'sessionRanking')).then(() => {
+        status.textContent = "セッションランキングを初期化しました。";
+      });
+    };
+
+    window.resetTotalRanking = () => {
+      remove(ref(db, 'players')).then(() => {
+        remove(ref(db, 'sessionRanking'));
+        remove(ref(db, 'totalRanking'));
+        status.textContent = "全てのプレイヤー情報とランキングを初期化しました。";
+      });
+    };
+  </script>
+
+  <script>
+    function goToRanking() {
+      localStorage.setItem("fromPage", "admin_reset");
+      location.href = "ranking.html";
+    }
+  </script>
+</body>
+</html>

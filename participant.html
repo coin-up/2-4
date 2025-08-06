@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>参加者ページ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>参加者ページ</h1>
+    <video id="qr-video" width="300" height="200" autoplay></video>
+    <p id="scan-message">QRコードをかざしてください</p>
+
+    <div id="user-info" style="display:none;">
+      <p>ID: <span id="user-id"></span></p>
+      <p>コイン残高: <span id="coin-count"></span></p>
+      <button onclick="goToRanking()">ランキングを見る</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/participant.js"></script>
+</body>
+</html>

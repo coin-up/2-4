@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>管理者ページ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>管理者画面</h1>
+
+    <!-- 管理者QRログイン -->
+    <div id="admin-auth">
+      <p>管理者QRコードを読み取ってください</p>
+      <video id="admin-qr-video" width="300" height="200" autoplay></video>
+    </div>
+
+    <!-- 認証後に表示される管理パネル -->
+    <div id="admin-panel" style="display: none;">
+      <p>参加者QRコードを読み取ってください</p>
+      <video id="user-qr-video" width="300" height="200" autoplay></video>
+
+      <div id="user-info" style="display: none;">
+        <p>ID: <span id="target-user-id"></span></p>
+        <p>コイン: <span id="target-user-coins"></span></p>
+
+        <div class="buttons">
+          <button onclick="adjustCoins(1)">+1</button>
+          <button onclick="adjustCoins(2)">+2</button>
+          <button onclick="adjustCoins(3)">+3</button>
+          <button onclick="adjustCoins(-1)">-1</button>
+          <button onclick="adjustCoins(-2)">-2</button>
+          <button onclick="adjustCoins(-3)">-3</button>
+          <button onclick="adjustCoins(-5)">-5</button>
+          <button onclick="multiplyCoins(2)">×2</button>
+          <button onclick="multiplyCoins(3)">×3</button>
+        </div>
+
+        <button onclick="goToRanking()">ランキングを見る</button>
+      </div>
+
+      <p id="user-scan-message">参加者のQRコードをかざしてください</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
